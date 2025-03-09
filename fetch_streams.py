@@ -1,18 +1,17 @@
 import requests
 import pandas as pd
-from time import sleep
 import re
 import os
 
 # 多个网站 URL 列表
 urls = [
-    "http://8.138.7.223/live.txt",
     "https://tv.iill.top/m3u/Gather",
+    "https://tv.iill.top/m3u/Live",
     "https://ghfast.top/https://raw.githubusercontent.com/tianya7981/jiekou/refs/heads/main/%E9%87%8E%E7%81%AB959",
     "http://tot.totalh.net/tttt.txt",
-    "https://tv.iill.top/m3u/Live",
-    "https://tv.iill.top/m3u/Sport",
-    "https://tv.iill.top/m3u/MyTV",
+    "https://github.com/Rivens7/Livelist/blob/main/CCTV.m3u",
+    "https://raw.githubusercontent.com/YueChan/Live/refs/heads/main/APTV.m3u",
+    "https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u",
     'https://raw.githubusercontent.com/BurningC4/Chinese-IPTV/master/TV-IPV4.m3u',
     "https://raw.githubusercontent.com/Ftindy/IPTV-URL/main/IPV6.m3u",
 ]
@@ -22,19 +21,22 @@ ipv4_pattern = re.compile(r'^http://(\d{1,3}\.){3}\d{1,3}')
 ipv6_pattern = re.compile(r'^http://\[([a-fA-F0-9:]+)\]')
 
 # 提示信息和容错处理
-def fetch_streams_from_url(url, retries=3, timeout=10):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    }
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, headers=headers, timeout=timeout)
-            response.raise_for_status()  # 检查HTTP状态码
-            return response.text
-        except requests.exceptions.RequestException as e:
-            print(f"从 {url} 获取数据失败，尝试 {attempt + 1}/{retries}，错误: {e}")
-            sleep(2)  # 等待2秒后重试
-    return None
+def fetch_streams_from_url(url):
+    print(f"正在爬取网站源: {url}")
+    try:
+        response = requests.get(url, timeout=10)  # 增加超时处理
+        response.encoding = 'utf-8'  # 确保使用utf-8编码
+        if response.status_code == 200:
+            content = response.text
+            print(f"成功获取源自: {url}")
+            return content
+        else:
+            print(f"从 {url} 获取数据失败，状态码: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"请求 {url} 时发生错误: {e}")
+        return None
+
 # 获取所有源，并处理错误
 def fetch_all_streams():
     all_streams = []
@@ -94,7 +96,7 @@ def organize_streams(content):
 
     return grouped
 
-def save_to_txt(grouped_streams, filename="final_streams.txt"):
+def save_to_txt(grouped_streams, filename="final_streams.md"):
     filepath = os.path.join(os.getcwd(), filename)  # 使用绝对路径
     print(f"保存文件的路径是: {filepath}")  # 输出文件保存路径
     ipv4_lines = []

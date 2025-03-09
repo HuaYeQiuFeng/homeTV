@@ -36,7 +36,7 @@ jobs:
       run: |
         python fetch_streams.py
 
-    # 5. 列出当前目录中的文件，确保 final_streams.txt 存在
+    # 5. 列出当前目录中的文件，确保 final_streams.md 存在
     - name: List files in workspace
       run: ls -la
 
@@ -62,4 +62,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: final_streams
-        path: final_streams.txt
+        path: final_streams.md
