@@ -96,7 +96,7 @@ def organize_streams(content):
 
     return grouped
 
-def save_to_txt(grouped_streams, filename="final_streams.md"):
+def save_to_txt(grouped_streams, filename="final_streams.txt"):
     filepath = os.path.join(os.getcwd(), filename)  # 使用绝对路径
     print(f"保存文件的路径是: {filepath}")  # 输出文件保存路径
     ipv4_lines = []
